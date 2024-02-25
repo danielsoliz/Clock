@@ -1,10 +1,9 @@
-#include "Clock.h"
+#include "clock.h"
 #include <iostream>
 #include <string>
 
 int main() {
     Clock clock;  // Create a Clock instance with default time 0:0:0:0
-    Clock comparisonClock; // For comparison operations
     int choice = 0;
 
     do {
@@ -15,7 +14,8 @@ int main() {
         std::cout << "4. Display Time\n";
         std::cout << "5. Negate Time\n";
         std::cout << "6. Compare Time\n";
-        std::cout << "7. Exit\n";
+         std::cout << "7. Reset Time\n"; 
+        std::cout << "8. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
 
@@ -57,6 +57,7 @@ int main() {
                 break;
             }
             case 6: {  // Compare Time
+                Clock comparisonClock; 
                 int days, hours, minutes, seconds;
                 std::cout << "Enter days, hours, minutes, and seconds for the clock to compare: ";
                 std::cin >> days >> hours >> minutes >> seconds;
@@ -67,13 +68,19 @@ int main() {
                 else if (clock > comparisonClock) std::cout << "First clock is greater than the second.\n";
                 break;
             }
-            case 7:  // Exit
+            case 7: {  // Reset Time
+                clock.Reset();  // Resetting clock to default time
+                std::cout << "Clock reset to 0:0:0:0.\n";
+                break;
+            }
+            case 8:  // Exit
                 std::cout << "Exiting...\n";
                 break;
             default:
                 std::cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 7);
+    } while (choice != 8);
+
 
     return 0;
 }

@@ -23,6 +23,7 @@ Clock::Clock(int newDays, int newHours, int newMinutes, int newSeconds) {
     SetHours(newHours);
     SetMinutes(newMinutes);
     SetSeconds(newSeconds);
+    adjustTimeComponents(GetTotalSeconds());
 }
 
 // Getters
@@ -42,43 +43,45 @@ int Clock::GetSeconds() const {
     return seconds;
 }
 
-// Setters
+// Corrected Setters
 bool Clock::SetSeconds(int s) {
     seconds = s;
-    fixOverFlow();
     return true;
 }
 
 bool Clock::SetMinutes(int m) {
     minutes = m;
-    fixOverFlow();
     return true;
 }
 
 bool Clock::SetHours(int h) {
     hours = h;
-    fixOverFlow();
     return true;
 }
 
 bool Clock::SetDays(int d) {
     days = d;
-    fixOverFlow();
     return true;
 }
 
-void Clock::fixOverFlow() {
-    int totalSeconds = GetSeconds() + GetMinutes() * 60 + GetHours() * 3600 + GetDays() * 86400;
-    ConvertSectoDay(totalSeconds);
+int Clock::GetTotalSeconds() const {
+    return seconds + (minutes * 60) + (hours * 3600) + (days * 86400);
 }
 
-void Clock::ConvertSectoDay(int n) {
-    SetDays(n / (24 * 3600));
-    n %= (24 * 3600);
-    SetHours(n / 3600);
-    n %= 3600;
-    SetMinutes(n / 60);
-    SetSeconds(n % 60);
+void Clock::adjustTimeComponents(int totalSeconds) {
+    // Calculate each component
+    int newDays = totalSeconds / (24 * 3600);
+    totalSeconds %= (24 * 3600); // Update totalSeconds after calculating days
+    int newHours = totalSeconds / 3600;
+    totalSeconds %= 3600; // Update totalSeconds after calculating hours
+    int newMinutes = totalSeconds / 60;
+    int newSeconds = totalSeconds % 60; // Remainder is the new seconds value
+
+    // Use setters to update the class members
+    SetDays(newDays);
+    SetHours(newHours);
+    SetMinutes(newMinutes);
+    SetSeconds(newSeconds);
 }
 
 // Overloading the unary minus operator
@@ -88,23 +91,25 @@ Clock Clock::operator-() const {
 
 // Overloading the addition operator
 Clock Clock::operator+(const Clock& other) const {
-    int totalSeconds1 = (GetDays() * 86400) + (GetHours() * 3600) + (GetMinutes() * 60) + GetSeconds();
-    int totalSeconds2 = (other.GetDays() * 86400) + (other.GetHours() * 3600) + (other.GetMinutes() * 60) + other.GetSeconds();
+    int totalSeconds1 = GetTotalSeconds(); // Utilize the existing method to get total seconds
+    int totalSeconds2 = other.GetTotalSeconds(); // Same for the other Clock
     int totalSecondsResult = totalSeconds1 + totalSeconds2;
 
     Clock result;
-    result.ConvertSectoDay(totalSecondsResult);
+    // Use adjustTimeComponents to set the result Clock's time based on the total seconds result
+    result.adjustTimeComponents(totalSecondsResult);
     return result;
 }
 
-// Overloading the subtraction operator
 Clock Clock::operator-(const Clock& other) const {
-    int totalSeconds1 = (GetDays() * 86400) + (GetHours() * 3600) + (GetMinutes() * 60) + GetSeconds();
-    int totalSeconds2 = (other.GetDays() * 86400) + (other.GetHours() * 3600) + (other.GetMinutes() * 60) + other.GetSeconds();
+    int totalSeconds1 = GetTotalSeconds(); // Utilize the existing method to get total seconds
+    int totalSeconds2 = other.GetTotalSeconds(); // Same for the other Clock
     int totalSecondsResult = totalSeconds1 - totalSeconds2;
 
     Clock result;
-    result.ConvertSectoDay(abs(totalSecondsResult));
+    // Use adjustTimeComponents directly to set the result Clock's time based on absolute value of totalSecondsResult
+    result.adjustTimeComponents(abs(totalSecondsResult));
+    // The concept of negating a Clock object (-result) is removed since it's not defined how to negate time meaningfully
     return totalSecondsResult < 0 ? -result : result;
 }
 

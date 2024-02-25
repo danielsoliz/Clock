@@ -7,6 +7,8 @@ private:
     int hours; 
     int days; 
 
+    void adjustTimeComponents(int totalSec);
+
 public: 
     // Constructors
     Clock();
@@ -37,6 +39,8 @@ public:
 
     // Member functions
     void Reset(); 
-    void fixOverFlow(); 
-    void ConvertSectoDay(int n); 
+    // void fixOverFlow(); 
+    // void ConvertSectoDay(int n); 
+
+    int GetTotalSeconds() const;
 };
